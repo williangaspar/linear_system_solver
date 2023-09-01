@@ -87,7 +87,7 @@ def push_zero_row_to_the_end(matrix):
 
     floating_index = -1
     real_index = -1
-    stop_index = rows * 2
+    stop_index = rows * columns
 
     while real_index != stop_index and floating_index != rows - 1:
         floating_index += 1
@@ -126,16 +126,22 @@ def auto_swap(matrix):
 def auto_multiply(matrix):
     rows, columns = matrix.shape
 
+    pivot_index = -1
+
     for row_index in range(rows):
         if row_index >= columns:
             break
 
         current_row = matrix[row_index]
-        cell_value = current_row[row_index]
 
-        is_pivot = check_is_pivot(current_row, row_index)
-        if is_pivot and cell_value != 1:
-            matrix[row_index] = Fraction(1, cell_value) * current_row
+        candidate_pivot = find_any_pivot_index_row(current_row, pivot_index)
+
+        is_pivot = candidate_pivot > -1
+        if is_pivot:
+            pivot_index = candidate_pivot
+            cell_value = current_row[pivot_index]
+            if cell_value != 1:
+                matrix[row_index] = Fraction(1, cell_value) * current_row
     return matrix
 
 
@@ -161,13 +167,20 @@ def auto_add(matrix):
     return matrix
 
 
-def reverse_matrix(matrix):
+def auto_add_reverse(matrix):
     rows, columns = matrix.shape
-    matrix = np.flipud(matrix)
 
-    for row_index in range(rows):
-        row = matrix[row_index]
-        matrix[row_index] = np.append(np.flip(row[: columns - 1]), row[columns - 1])
+    for row_index in reversed(range(rows)):
+        for column_index in reversed(range(columns - 1)):
+            for row_index_above in reversed(range(row_index)):
+                cell_value = matrix[row_index_above][column_index]
+                current_row_value = matrix[row_index][column_index]
+                if cell_value != 0 and current_row_value != 0:
+                    row_multiplier = Fraction(-cell_value, current_row_value)
+                    matrix[row_index_above] = (
+                        row_multiplier * matrix[row_index] + matrix[row_index_above]
+                    )
+
     return matrix
 
 
@@ -178,23 +191,16 @@ def solve_top_to_bottom(matrix):
     matrix = auto_add(matrix)
 
     matrix = auto_swap(matrix)
-    matrix = push_zero_row_to_the_end(matrix)
     matrix = auto_multiply(matrix)
+    matrix = push_zero_row_to_the_end(matrix)
 
     return matrix
 
 
 def solve_bottom_to_top(matrix):
-    matrix = reverse_matrix(matrix)
-    matrix = auto_add(matrix)
-    matrix = auto_multiply(matrix)
-
-    matrix = reverse_matrix(matrix)
-    matrix = auto_swap(matrix)
+    matrix = auto_add_reverse(matrix)
     matrix = push_zero_row_to_the_end(matrix)
-    matrix = auto_add(matrix)
     matrix = auto_multiply(matrix)
-    matrix = push_zero_row_to_the_end(matrix)
 
     return matrix
 

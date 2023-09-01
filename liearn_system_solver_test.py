@@ -10,7 +10,6 @@ from linear_sistem_solver import (
     find_any_pivot_index,
     find_any_pivot_index_row,
     push_zero_row_to_the_end,
-    reverse_matrix,
     solve_linear_system,
     swap_row,
 )
@@ -148,7 +147,30 @@ class TestPushZeroRowToTheEnd(unittest.TestCase):
     def test_push_zero_row_to_the_end_4x4_3(self):
         matrix = np.array([[0, 0, 0, 1], [-1, -2, -3, -4], [5, 6, 7, 8], [0, 0, 0, 0]])
         expected = np.array(
-            [[-1, -2, -3, -4], [5, 6, 7, 8], [0, 0, 0, 0], [0, 0, 0, 1]]
+            [[-1, -2, -3, -4], [5, 6, 7, 8], [0, 0, 0, 1], [0, 0, 0, 0]]
+        )
+        self.assertTrue((push_zero_row_to_the_end(matrix) == expected).all())
+
+    def test_push_zero_row_to_the_end_4x4_4(self):
+        matrix = np.array([[1, 2, 2, 1], [0, 0, 0, 0], [0, 0, 0, 0], [5, 6, 7, 8]])
+        expected = np.array([[1, 2, 2, 1], [5, 6, 7, 8], [0, 0, 0, 0], [0, 0, 0, 0]])
+        self.assertTrue((push_zero_row_to_the_end(matrix) == expected).all())
+
+    def test_push_zero_row_to_the_end_5x4_4(self):
+        matrix = np.array(
+            [[1, 2, 2, 1], [5, 6, 7, 8], [0, 0, 0, 0], [0, 0, 0, 0], [1, 8, 2, 1]]
+        )
+        expected = np.array(
+            [[1, 2, 2, 1], [5, 6, 7, 8], [1, 8, 2, 1], [0, 0, 0, 0], [0, 0, 0, 0]]
+        )
+        self.assertTrue((push_zero_row_to_the_end(matrix) == expected).all())
+
+    def test_push_zero_row_to_the_end_5x4_4_2(self):
+        matrix = np.array(
+            [[1, 2, 2, 1], [0, 6, 7, 8], [0, 0, 2, 1], [0, 0, 0, 0], [0, 0, 0, 0]]
+        )
+        expected = np.array(
+            [[1, 2, 2, 1], [0, 6, 7, 8], [0, 0, 2, 1], [0, 0, 0, 0], [0, 0, 0, 0]]
         )
         self.assertTrue((push_zero_row_to_the_end(matrix) == expected).all())
 
@@ -220,18 +242,6 @@ class TestAutoAdd(unittest.TestCase):
         self.assertTrue((auto_add(matrix) == expected).all())
 
 
-class TestReverseMatrix(unittest.TestCase):
-    def test_reverse_matrix_3x3(self):
-        matrix = np.array([[1, 2, 3], [0, 1, 2], [0, 0, 1]])
-        expected = np.array([[0, 0, 1], [1, 0, 2], [2, 1, 3]])
-        self.assertTrue((reverse_matrix(matrix) == expected).all())
-
-    def test_reverse_matrix_3x4(self):
-        matrix = np.array([[1, 2, 3, 1], [2, 4, 7, 2], [3, 7, 11, 8]], dtype=object)
-        expected = np.array([[11, 7, 3, 8], [7, 4, 2, 2], [3, 2, 1, 1]], dtype=object)
-        self.assertTrue((reverse_matrix(matrix) == expected).all())
-
-
 class TestSolveLinearSystem(unittest.TestCase):
     def test_solve_linear_system_3x4(self):
         matrix = np.array(
@@ -276,6 +286,94 @@ class TestSolveLinearSystem(unittest.TestCase):
                 [1, 0, 0, 0, Fraction(5, 2)],
                 [0, 1, 0, -1, 0],
                 [0, 0, 1, 0, Fraction(3, 2)],
+            ],
+            dtype=object,
+        )
+        self.assertTrue((solve_linear_system(matrix) == expected).all())
+
+    def test_solve_linear_system_5x4_empty_lines(self):
+        matrix = np.array(
+            [
+                [1, 2, 0, 4],
+                [2, 1, -7, 1],
+                [-1, 3, 6, 2],
+                [3, 1, -11, 1],
+                [2, 2, -2, 6],
+            ],
+            dtype=object,
+        )
+        expected = np.array(
+            [
+                [1, 0, 0, 4],
+                [0, 1, 0, 0],
+                [0, 0, 1, 1],
+                [0, 0, 0, 0],
+                [0, 0, 0, 0],
+            ],
+            dtype=object,
+        )
+        self.assertTrue((solve_linear_system(matrix) == expected).all())
+
+    def test_solve_linear_system_6_4(self):
+        matrix = np.array(
+            [
+                [1, 2, 7, 1, -1, -15],
+                [1, 1, 3, 1, 0, -6],
+                [3, 2, 5, -1, 9, 19],
+                [1, -1, -5, 2, 0, 5],
+            ],
+            dtype=object,
+        )
+        expected = np.array(
+            [
+                [1, 0, -1, 0, 3, 10],
+                [0, 1, 4, 0, -1, -9],
+                [0, 0, 0, 1, -2, -7],
+                [0, 0, 0, 0, 0, 0],
+            ],
+            dtype=object,
+        )
+        self.assertTrue((solve_linear_system(matrix) == expected).all())
+
+    def test_solve_linear_system_6x5(self):
+        matrix = np.array(
+            [
+                [2, 1, 5, 1, 5, 1],
+                [1, 1, 3, 1, 6, -1],
+                [-1, 1, -1, 0, 4, -3],
+                [-3, 2, -4, -4, -7, 0],
+                [3, -1, 5, 2, 2, 3],
+            ],
+            dtype=object,
+        )
+        expected = np.array(
+            [
+                [1, 0, 2, 0, -1, 2],
+                [0, 1, 1, 0, 3, -1],
+                [0, 0, 0, 1, 4, -2],
+                [0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0],
+            ],
+            dtype=object,
+        )
+        self.assertTrue((solve_linear_system(matrix) == expected).all())
+
+    def test_solve_linear_system_5x4_empty_line(self):
+        matrix = np.array(
+            [
+                [2, -1, 3, 9],
+                [1, 1, 1, 2],
+                [3, 0, -1, 1],
+                [2, 1, -2, -3],
+            ],
+            dtype=object,
+        )
+        expected = np.array(
+            [
+                [1, 0, 0, 1],
+                [0, 1, 0, -1],
+                [0, 0, 1, 2],
+                [0, 0, 0, 0],
             ],
             dtype=object,
         )

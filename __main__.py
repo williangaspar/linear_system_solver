@@ -5,14 +5,15 @@ from matrix_reader import read_matrix
 
 def main():
     matrix = read_matrix()
-    if (len(matrix) == 0):
+    if len(matrix) == 0:
         return
-    
+
     print_augumented_matrix(matrix)
     print()
     solved_matrix = solve_linear_system(matrix)
     print_augumented_matrix(solved_matrix)
     return
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
