@@ -62,7 +62,8 @@ def find_any_pivot_index(matrix, row_index, previous_pivot_index):
 
 
 def check_is_pivot(row, index):
-    if row[index] != 0:
+    size = len(row)
+    if index >= size or row[index] != 0:
         for index in range(index):
             if row[index] != 0:
                 return False
@@ -123,9 +124,12 @@ def auto_swap(matrix):
 
 
 def auto_multiply(matrix):
-    rows = len(matrix)
+    rows, columns = matrix.shape
 
     for row_index in range(rows):
+        if row_index >= columns:
+            break
+
         current_row = matrix[row_index]
         cell_value = current_row[row_index]
 
