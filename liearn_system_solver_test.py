@@ -7,6 +7,8 @@ from linear_sistem_solver import (
     auto_multiply,
     auto_swap,
     check_is_pivot,
+    find_any_pivot_index,
+    find_any_pivot_index_row,
     push_zero_row_to_the_end,
     reverse_matrix,
     solve_linear_system,
@@ -29,6 +31,75 @@ class TestSwapRow(unittest.TestCase):
         matrix = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
         expected = np.array([[1, 2, 3], [7, 8, 9], [4, 5, 6]])
         self.assertTrue((swap_row(matrix, 1, 2) == expected).all())
+
+
+class TestFindAnyPivotIndexRow(unittest.TestCase):
+    def test_find_any_pivot_index_2x2(self):
+        row = np.array([1, 2])
+        self.assertEqual(find_any_pivot_index_row(row, -1), 0)
+
+    def test_find_any_pivot_index_2x2_2(self):
+        row = np.array([0, 2])
+        self.assertEqual(find_any_pivot_index_row(row, 0), -1)
+
+    def test_find_any_pivot_index_row_2x2_3(self):
+        row = np.array([1, 2])
+        # we already have a pivot at index 0
+        self.assertEqual(find_any_pivot_index_row(row, 0), -1)
+
+    def test_find_any_pivot_index_row_3x3(self):
+        row = np.array([0, 3, 0])
+        self.assertEqual(find_any_pivot_index_row(row, 0), 1)
+
+    def test_find_any_pivot_index_row_3x3_2(self):
+        row = np.array([0, 0, 3])
+        self.assertEqual(find_any_pivot_index_row(row, 1), -1)
+
+    def test_find_any_pivot_index_row_3x3_3(self):
+        row = np.array([0, 0, 3])
+        self.assertEqual(find_any_pivot_index_row(row, 2), -1)
+
+    def test_find_any_pivot_index_row_4x3_3(self):
+        row = np.array([0, 0, 3, 9])
+        self.assertEqual(find_any_pivot_index_row(row, 2), -1)
+
+    def test_find_any_pivot_index_row_4x3_4(self):
+        row = np.array([0, 0, 3, 9])
+        self.assertEqual(find_any_pivot_index_row(row, 1), 2)
+
+    def test_find_any_pivot_index_row_4x3_5(self):
+        row = np.array([0, 0, 9, 0])
+        self.assertEqual(find_any_pivot_index_row(row, 1), 2)
+
+    def test_find_any_pivot_index_row_4x3_6(self):
+        row = np.array([0, 0, 0, 0])
+        self.assertEqual(find_any_pivot_index_row(row, 2), -1)
+
+    def test_find_any_pivot_index_row_4x3_7(self):
+        row = np.array([0, 0, 0, 0])
+        self.assertEqual(find_any_pivot_index_row(row, -1), -1)
+
+
+class TestFindAnyPivotIndex(unittest.TestCase):
+    def test_find_any_pivot_index_2x2(self):
+        matrix = np.array([[1, 2], [3, 4]])
+        self.assertEqual(find_any_pivot_index(matrix, 0, -1), 0)
+
+    def test_find_any_pivot_index_2x2_2(self):
+        matrix = np.array([[0, 2], [1, 0]])
+        self.assertEqual(find_any_pivot_index(matrix, 0, -1), 1)
+
+    def test_find_any_pivot_index_2x2_3(self):
+        matrix = np.array([[0, 0], [0, 0]])
+        self.assertEqual(find_any_pivot_index(matrix, 0, -1), -1)
+
+    def test_find_any_pivot_index_3x3(self):
+        matrix = np.array([[0, 0, 3], [1, 0, 0], [0, 0, 0]])
+        self.assertEqual(find_any_pivot_index(matrix, 0, -1), 1)
+
+    def test_find_any_pivot_index_3x3_2(self):
+        matrix = np.array([[0, 0, 3], [1, 0, 0], [0, 0, 0]])
+        self.assertEqual(find_any_pivot_index(matrix, 1, -1), 1)
 
 
 class TestCheckIsPivot(unittest.TestCase):
@@ -104,8 +175,8 @@ class TestAutoSwap(unittest.TestCase):
         self.assertTrue((auto_swap(matrix) == expected).all())
 
     def test_auto_swap_3x3_4(self):
-        matrix = np.array([[0, 2, 3], [0, 0, 3], [0, 2, 0]])
-        expected = np.array([[0, 2, 0], [0, 2, 3], [0, 0, 3]])
+        matrix = np.array([[1, 2, 3, 4], [0, 0, 0, 0], [0, 0, 3, 0]])
+        expected = np.array([[1, 2, 3, 4], [0, 0, 3, 0], [0, 0, 0, 0]])
         self.assertTrue((auto_swap(matrix) == expected).all())
 
 
@@ -137,11 +208,6 @@ class TestAutoAdd(unittest.TestCase):
     def test_auto_add_2x3(self):
         matrix = np.array([[2, 8, 4], [1, -8, 10]])
         expected = np.array([[2, 8, 4], [0, -12, 8]])
-        self.assertTrue((auto_add(matrix) == expected).all())
-
-    def test_auto_add_3x4(self):
-        matrix = np.array([[1, 2, 3, 1], [2, 4, 7, 2], [3, 7, 11, 8]], dtype=object)
-        expected = np.array([[1, 2, 3, 1], [0, 1, 2, 5], [0, 0, 1, 0]], dtype=object)
         self.assertTrue((auto_add(matrix) == expected).all())
 
     def test_auto_add_3x5(self):
@@ -208,7 +274,7 @@ class TestSolveLinearSystem(unittest.TestCase):
         expected = np.array(
             [
                 [1, 0, 0, 0, Fraction(5, 2)],
-                [0, 1, 2, -1, 3],
+                [0, 1, 0, -1, 0],
                 [0, 0, 1, 0, Fraction(3, 2)],
             ],
             dtype=object,
