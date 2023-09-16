@@ -12,7 +12,12 @@ def main():
     print()
     solved_matrix = solve_linear_system(matrix)
     print_augumented_matrix(solved_matrix)
-    return
+
+    row, col = solved_matrix.shape
+
+    print()
+    for i in range(row):
+        print(f"x{i + 1} = {float(solved_matrix[i, col - 1])}")
 
 
 if __name__ == "__main__":
