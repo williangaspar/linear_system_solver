@@ -5,8 +5,8 @@ Not much here, just a simple Python linear equation solver. Matrix in, solution 
 Input:
 
 ```
-1,2,3
-4,5,6
+1 2 3
+4 5 6
 end
 ```
 
